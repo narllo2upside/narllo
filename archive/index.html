@@ -1,3 +1,30 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>린치트래커 지난 기록</title>
-<style>body{margin:0;background:#000;color:#f3f4f6;font:15px/1.6 system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif}main{max-width:640px;margin:0 auto;padding:40px 16px}h1{font-size:24px;margin:0 0 4px}p{color:#8d929c;margin:0 0 24px}ul{list-style:none;padding:0;margin:0}li{border-bottom:1px solid #1f2026}a{display:block;padding:12px 0;color:#f3f4f6;text-decoration:none;font-variant-numeric:tabular-nums}a:hover{color:#4d84ff}.top{color:#4d84ff}</style></head>
-<body><main><h1>린치트래커 지난 기록</h1><p><a class="top" href="../">← 최신 린치트래커</a></p><ul><li><a href="2026-10-16.html">2026-10-16</a></li></ul><p style="margin-top:24px">※ 투자 참고용이며 투자 권유가 아닙니다.</p></main></body></html>
+<style>body{margin:0;background:#000;color:#f3f4f6;font:15px/1.6 system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif}main{max-width:640px;margin:0 auto;padding:40px 16px}h1{font-size:24px;margin:0 0 4px}p{color:#8d929c;margin:0 0 24px}ul{list-style:none;padding:0;margin:0}li{border-bottom:1px solid #1f2026}a{display:block;padding:12px 0;color:#f3f4f6;text-decoration:none;font-variant-numeric:tabular-nums}a:hover{color:#4d84ff}.top{color:#4d84ff;display:inline;padding:0}</style></head>
+<body><main><h1>린치트래커 지난 기록</h1><p><a class="top" href="../">← 최신 린치트래커</a></p><ul id="list"><li><span style="display:block;padding:12px 0;color:#8d929c">불러오는 중입니다.</span></li></ul><p style="margin-top:24px">※ 투자 참고용이며 투자 권유가 아닙니다.</p></main>
+<script>
+// archive 폴더의 YYYY-MM-DD.html 목록 찾기: GitHub API → 실패하면 최근 날짜를 직접 확인
+window.ltFindDates = async function (base) {
+  const re = /^(\d{4}-\d{2}-\d{2})\.html$/;
+  try {
+    const r = await fetch('https://api.github.com/repos/narllo2upside/narllo/contents/archive', { cache: 'no-store' });
+    if (r.ok) {
+      const list = (await r.json()).map((f) => (f.name.match(re) || [])[1]).filter(Boolean).sort().reverse();
+      if (list.length) return list;
+    }
+  } catch (e) {}
+  const out = [];
+  const d = new Date();
+  for (let i = 0; i < 45; i++) {
+    const s = new Date(d.getTime() - i * 864e5).toISOString().slice(0, 10);
+    try { const r = await fetch(base + s + '.html', { method: 'HEAD', cache: 'no-store' }); if (r.ok) out.push(s); } catch (e) {}
+  }
+  return out;
+};
+(async () => {
+  const dates = await window.ltFindDates('');
+  const ul = document.getElementById('list');
+  ul.replaceChildren();
+  if (!dates.length) { const li = document.createElement('li'); li.textContent = '아직 올라온 기록이 없습니다.'; ul.append(li); return; }
+  dates.forEach((d, i) => { const li = document.createElement('li'); const a = document.createElement('a'); a.href = d + '.html'; a.textContent = d + (i === 0 ? '  (최신)' : ''); li.append(a); ul.append(li); });
+})();
+</script></body></html>
